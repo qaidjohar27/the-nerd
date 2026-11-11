@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1220"><title>The Nerd | SPM Tracker</title>
+<style>
+:root{color-scheme:dark;--panel:#121d30;--panel2:#18263d;--line:#293a54;--muted:#91a2bb;--text:#edf3fb;--accent:#8bd3ff;--green:#8ce0b2}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#172941,#0b1220 60%);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:1080px;margin:auto;padding:30px 16px 60px}.eyebrow{color:var(--accent);font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+h1{font-size:clamp(34px,6vw,50px);line-height:1.05;margin:8px 0}p{color:var(--muted)}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:25px 0}.stat,.subject{background:linear-gradient(145deg,var(--panel),#101a2b);border:1px solid var(--line);border-radius:16px}.stat{padding:15px}.stat strong{display:block;font-size:26px}.stat span,.subject small{font-size:12px;color:var(--muted)}
+.progress{height:8px;background:#26364d;border-radius:20px;overflow:hidden;margin-top:10px}.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#68bdf0,#8ce0b2);transition:width .2s}
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:20px 0}.toolbar input,.toolbar select,button{background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 12px;font:inherit}.toolbar input{flex:1;min-width:190px}button{cursor:pointer}button:hover{border-color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:14px}.subject{padding:17px}.head,.form-title{display:flex;justify-content:space-between;gap:10px;align-items:center}.subject h2{font-size:18px;margin:0}.count{color:var(--accent);font-size:12px;font-weight:800;white-space:nowrap}.form-block{margin-top:16px}.form-title{font-size:13px;font-weight:750;margin-bottom:8px;color:#c4d2e4}.chapters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.chapter{display:flex;align-items:flex-start;gap:9px;padding:9px;background:var(--panel2);border:1px solid transparent;border-radius:9px;font-size:13px;cursor:pointer}.chapter:hover{border-color:#4b6a8d}.chapter input{accent-color:#78c9f2;width:16px;height:16px;flex:none;margin-top:2px}.chapter:has(input:checked){color:var(--green);text-decoration:line-through;opacity:.72}
+.note{font-size:12px;color:var(--muted);margin-top:22px;text-align:center}.empty{color:var(--muted);padding:22px;text-align:center}
+@media(max-width:520px){main{padding:24px 13px 44px}.stats{gap:8px}.stat{padding:11px}.stat strong{font-size:21px}.chapters{grid-template-columns:1fr}}
+</style></head><body><main>
+<div class="eyebrow">Personal study dashboard</div><h1>The Nerd<span style="color:#8bd3ff">.</span></h1><p>SPM 2026 · 9-subject syllabus completion tracker</p>
+<section class="stats"><div class="stat"><strong id="done">0</strong><span>Completed items</span></div><div class="stat"><strong id="total">0</strong><span>Total checklist items</span></div><div class="stat"><strong id="percent">0%</strong><span>Overall completion</span><div class="progress"><i id="bar"></i></div></div></section>
+<div class="toolbar"><input id="search" type="search" placeholder="Search subjects or chapters…" aria-label="Search"><select id="filter" aria-label="Filter subjects"><option value="all">All subjects</option><option value="incomplete">In progress</option><option value="complete">Completed</option></select><button id="reset" type="button">Reset progress</button></div>
+<div id="subjects" class="grid"></div><div class="note">Tick an item when you have completed studying and practising it. Progress saves automatically in this browser on this device.</div>
+</main><script>
+const subjects=[
+{name:"Bahasa Melayu",forms:[
+{name:"Paper 1: Writing",items:["Section A: Directed Writing","Section B: Extended Writing"]},
+{name:"Paper 2: Reading and Language",items:["Section A: Language System and Application","Section B: Comprehension","Section C: Summary"]}
+]},
+{name:"English",forms:[
+{name:"Paper 1: Reading",items:["Part 1: Short Texts","Part 2: Error Correction","Part 3: Information Transfer","Part 4: Short Texts","Part 5: Matching and Gapped Text"]},
+{name:"Paper 2: Writing",items:["Part 1: Email","Part 2: Guided Writing","Part 3: Extended Writing"]}
+]},
+{name:"Sejarah",forms:[
+{name:"Tingkatan 4",items:["Bab 1: Warisan Negara Bangsa","Bab 2: Kebangkitan Nasionalisme","Bab 3: Konflik Dunia dan Pendudukan Jepun di Negara Kita","Bab 4: Era Peralihan Kuasa British di Negara Kita","Bab 5: Persekutuan Tanah Melayu 1948","Bab 6: Ancaman Komunis dan Perisytiharan Darurat","Bab 7: Usaha ke Arah Kemerdekaan","Bab 8: Pilihan Raya","Bab 9: Perlembagaan Persekutuan Tanah Melayu 1957","Bab 10: Pemasyhuran Kemerdekaan"]},
+{name:"Tingkatan 5",items:["Bab 1: Kedaulatan Negara","Bab 2: Perlembagaan Persekutuan","Bab 3: Raja Berperlembagaan dan Demokrasi Berparlimen","Bab 4: Sistem Persekutuan","Bab 5: Pembentukan Malaysia","Bab 6: Cabaran Selepas Pembentukan Malaysia","Bab 7: Membina Kesejahteraan Negara","Bab 8: Membina Kemakmuran Negara","Bab 9: Dasar Luar Malaysia","Bab 10: Kecemerlangan Malaysia di Persada Dunia"]}
+]},
+{name:"Mathematics",forms:[
+{name:"Form 4",items:["Chapter 1: Quadratic Functions and Equations in One Variable","Chapter 2: Number Bases","Chapter 3: Logical Reasoning","Chapter 4: Set Operations","Chapter 5: Network in Graph Theory","Chapter 6: Linear Inequalities in Two Variables","Chapter 7: Motion Graphs","Chapter 8: Measures of Dispersion for Ungrouped Data","Chapter 9: Probability of Combined Events","Chapter 10: Consumer Mathematics: Financial Management"]},
+{name:"Form 5",items:["Chapter 1: Variation","Chapter 2: Matrices","Chapter 3: Consumer Mathematics: Insurance","Chapter 4: Consumer Mathematics: Taxation","Chapter 5: Congruency, Enlargement and Combined Transformations","Chapter 6: Ratios and Graphs of Trigonometric Functions","Chapter 7: Measures of Dispersion for Grouped Data","Chapter 8: Mathematical Modelling"]}
+]},
+{name:"Additional Mathematics",forms:[
+{name:"Form 4",items:["Chapter 1: Functions","Chapter 2: Quadratic Functions","Chapter 3: Systems of Equations","Chapter 4: Indices, Surds and Logarithms","Chapter 5: Progressions","Chapter 6: Linear Law","Chapter 7: Coordinate Geometry","Chapter 8: Vectors","Chapter 9: Solution of Triangles","Chapter 10: Index Numbers"]},
+{name:"Form 5",items:["Chapter 1: Circular Measure","Chapter 2: Differentiation","Chapter 3: Integration","Chapter 4: Permutation and Combination","Chapter 5: Probability Distribution","Chapter 6: Trigonometric Functions","Chapter 7: Linear Programming","Chapter 8: Kinematics of Linear Motion"]}
+]},
+{name:"Physics",forms:[
+{name:"Form 4",items:["Chapter 1: Measurement","Chapter 2: Force and Motion I","Chapter 3: Gravitation","Chapter 4: Heat","Chapter 5: Waves","Chapter 6: Light and Optics"]},
+{name:"Form 5",items:["Chapter 1: Force and Motion II","Chapter 2: Pressure","Chapter 3: Electricity","Chapter 4: Electromagnetism","Chapter 5: Electronics","Chapter 6: Nuclear Physics","Chapter 7: Quantum Physics"]}
+]},
+{name:"Chemistry",forms:[
+{name:"Form 4",items:["Chapter 1: Introduction to Chemistry","Chapter 2: Matter and the Atomic Structure","Chapter 3: The Mole Concept, Chemical Formula and Equation","Chapter 4: The Periodic Table of Elements","Chapter 5: Chemical Bond","Chapter 6: Acids, Bases and Salts","Chapter 7: Rate of Reaction","Chapter 8: Manufactured Substances in Industry"]},
+{name:"Form 5",items:["Chapter 1: Redox Equilibrium","Chapter 2: Carbon Compounds","Chapter 3: Thermochemistry","Chapter 4: Polymers","Chapter 5: Consumer and Industrial Chemistry"]}
+]},
+{name:"Biology",forms:[
+{name:"Form 4",items:["Chapter 1: Introduction to Biology and Laboratory Rules","Chapter 2: Cell Biology and Cell Organisation","Chapter 3: Movement of Substances Across the Plasma Membrane","Chapter 4: Chemical Composition in a Cell","Chapter 5: Metabolism and Enzymes","Chapter 6: Cell Division","Chapter 7: Cellular Respiration","Chapter 8: Respiratory System in Humans and Animals","Chapter 9: Nutrition and the Human Digestive System","Chapter 10: Transportation in Humans and Animals","Chapter 11: Human Immunity","Chapter 12: Coordination and Response in Humans","Chapter 13: Homeostasis and the Human Urinary System","Chapter 14: Support and Locomotion in Humans and Animals","Chapter 15: Sexual Reproduction, Development and Growth"]},
+{name:"Form 5",items:["Chapter 1: Plant Tissue Organisation and Growth","Chapter 2: Structure and Leaf Function","Chapter 3: Nutrition in Plants","Chapter 4: Transportation in Plants","Chapter 5: Response in Plants","Chapter 6: Sexual Reproduction in Flowering Plants","Chapter 7: Adaptation of Plants to Different Habitats","Chapter 8: Biodiversity","Chapter 9: Ecosystem","Chapter 10: Environmental Sustainability","Chapter 11: Inheritance","Chapter 12: Variation","Chapter 13: Genetic Technology"]}
+]},
+{name:"Pendidikan Islam",forms:[
+{name:"Form 4",items:["Pelajaran 1: Surah al-An'am, Ayat 162–163","Pelajaran 2: Surah al-Kahfi, Ayat 101–110","Pelajaran 3: Hukum Tajwid","Pelajaran 4: Larangan Rasuah","Pelajaran 5: Memahami Sunatullah","Pelajaran 6: Larangan Mempersendakan Agama","Pelajaran 7: Dakwah Pemacu Kemajuan","Pelajaran 8: Hindari Dosa-dosa Besar","Pelajaran 9: Kemuliaan Berdikari","Pelajaran 10: Allah SWT Maha Pembalas dan Maha Perkasa","Pelajaran 11: Perkara yang Membatalkan Iman","Pelajaran 12: Hindari Ajaran Sesat","Pelajaran 13: Haji dan Umrah","Pelajaran 14: Sembelihan","Pelajaran 15: Korban dan Akikah","Pelajaran 16: Muamalat Islam","Pelajaran 17: Solat Sunat Dhuha dan Solat Sunat Gerhana","Pelajaran 18: Kerajaan Khulafa ar-Rasyidin","Pelajaran 19: Kerajaan Umaiyah","Pelajaran 20: Kerajaan Abbasiyah","Pelajaran 21: Keunggulan Tokoh Empat Mazhab","Pelajaran 22: Bersikap Benar Menjauhkan Kemunafikan","Pelajaran 23: Khauf dan Raja'","Pelajaran 24: Adab terhadap Orang Sakit dan Kurang Upaya","Pelajaran 25: Wasatiah Menjamin Kecemerlangan Ummah"]},
+{name:"Form 5",items:["Pelajaran 1: Surah at-Taubah, Ayat 128–129","Pelajaran 2: Surah al-Hashr, Ayat 21–24","Pelajaran 3: Hukum Tajwid: Ra', Waqaf and Ibtida'","Pelajaran 4: Ciri-ciri Mukmin Berjaya","Pelajaran 5: Memahami Keutamaan dalam Tindakan","Pelajaran 6: Kepelbagaian Bangsa dalam Islam","Pelajaran 7: Setiap Orang Ialah Pemimpin","Pelajaran 8: Tujuh Golongan yang Mendapat Naungan Allah SWT","Pelajaran 9: Allah SWT Maha Mengawasi dan Maha Menyaksikan","Pelajaran 10: Akidah Ahli Sunnah Waljamaah","Pelajaran 11: Solat Sunat Istikharah dan Solat Sunat Tasbih","Pelajaran 12: Perkahwinan","Pelajaran 13: Isu-isu dalam Perkahwinan","Pelajaran 14: Pengurusan Harta Selepas Kematian","Pelajaran 15: Jenayah dalam Islam","Pelajaran 16: Kerajaan Uthmaniyah","Pelajaran 17: Keunggulan Tokoh Islam","Pelajaran 18: Tawaduk Menyucikan Jiwa","Pelajaran 19: Istiqamah Jalan Menuju Mujahadah","Pelajaran 20: Alam Sekitar Penenang Minda","Pelajaran 21: Sifat Mazmumah Meracuni Hati"]}
+]}
+];
+const STORAGE_KEY="theNerdSPMProgress_v4";let saved={};
+try{saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}")||{}}catch(e){saved={}}
+const esc=s=>s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function render(){
+ const all=[];subjects.forEach((s,si)=>s.forms.forEach((f,fi)=>f.items.forEach((item,ci)=>all.push({id:`${si}-${fi}-${ci}`,subject:s.name,item,form:f.name,checked:!!saved[`${si}-${fi}-${ci}`]}))));
+ const done=all.filter(x=>x.checked).length,pct=Math.round(done/all.length*100);
+ document.getElementById("done").textContent=done;document.getElementById("total").textContent=all.length;document.getElementById("percent").textContent=pct+"%";document.getElementById("bar").style.width=pct+"%";
+ const q=document.getElementById("search").value.trim().toLowerCase(),filter=document.getElementById("filter").value,root=document.getElementById("subjects");root.innerHTML="";let shown=0;
+ subjects.forEach((s,si)=>{const entries=all.filter(x=>x.subject===s.name),count=entries.length,n=entries.filter(x=>x.checked).length,complete=n===count;if((filter==="complete"&&!complete)||(filter==="incomplete"&&complete))return;if(q&&!(s.name+" "+entries.map(x=>x.form+" "+x.item).join(" ")).toLowerCase().includes(q))return;
+ let content=`<div class="head"><div><h2>${esc(s.name)}</h2><small>${n} of ${count} completed</small></div><span class="count">${Math.round(n/count*100)}%</span></div><div class="progress"><i style="width:${n/count*100}%"></i></div>`;
+ s.forms.forEach((f,fi)=>{const fd=f.items.filter((_,ci)=>!!saved[`${si}-${fi}-${ci}`]).length;content+=`<div class="form-block"><div class="form-title"><span>${esc(f.name)}</span><span>${fd}/${f.items.length}</span></div><div class="chapters">`;f.items.forEach((item,ci)=>{const id=`${si}-${fi}-${ci}`;content+=`<label class="chapter"><input type="checkbox" data-id="${id}" ${saved[id]?"checked":""}><span>${esc(item)}</span></label>`});content+="</div></div>"});
+ const card=document.createElement("section");card.className="subject";card.innerHTML=content;root.appendChild(card);shown++});
+ if(!shown)root.innerHTML='<div class="empty">No matching subjects or chapters.</div>';
+ root.querySelectorAll('input[type="checkbox"]').forEach(el=>el.addEventListener("change",()=>{saved[el.dataset.id]=el.checked;localStorage.setItem(STORAGE_KEY,JSON.stringify(saved));render()}));
+}
+document.getElementById("search").addEventListener("input",render);document.getElementById("filter").addEventListener("change",render);document.getElementById("reset").addEventListener("click",()=>{if(confirm("Reset all chapter progress?")){saved={};localStorage.removeItem(STORAGE_KEY);render()}});render();
+</script></body></html>
